@@ -1,4 +1,9 @@
 
+using API.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using System.Security.Policy;
+
 namespace API
 {
     public class Program
@@ -6,7 +11,10 @@ namespace API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            //register DB[cite: 7]
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection"); 
+builder.Services.AddDbContext<AppDbContext>(options => 
+    options.UseSqlServer(connectionString)); 
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -26,7 +34,7 @@ namespace API
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
+            builder.Services.AddSwaggerGen();
 
             app.MapControllers();
 
