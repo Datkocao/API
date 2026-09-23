@@ -60,13 +60,16 @@ namespace API.Controllers
         }
 
         [HttpPost("add-book")]
-        public IActionResult AddBook([FromBody] addBookRequestDTO addBookRequestDTO)
+        public IActionResult AddBook([FromBody] AddBookRequestDTO addBookRequestDTO)
         {
-            var publisherDomain = _dbContext.Publishers.FirstOrDefault(x => x.Id == addBookRequestDTO.PublisherID);
+            // check if publisher exists or not 
+            var publisherDomain = _dbContext.Publishers.FirstOrDefault(x => x.Id ==
+           addBookRequestDTO.PublisherID);
             if (publisherDomain == null)
             {
                 return NotFound(new { message = "Không tìm thấy NXB" });
             }
+            // create a new book domain object 
             var bookDomain = new Models.Domain.Book()
             {
                 Title = addBookRequestDTO.Title,
@@ -81,6 +84,7 @@ namespace API.Controllers
             };
             _dbContext.Books.Add(bookDomain);
             _dbContext.SaveChanges();
+        
             foreach (var authorId in addBookRequestDTO.AuthorIds)
             {
                 var authorDomain = _dbContext.Authors.FirstOrDefault(x => x.Id == authorId);
@@ -88,7 +92,6 @@ namespace API.Controllers
                 {
                     return NotFound(new { message = "Không tìm thấy tác giả" });
                 }
-
                 var bookAuthorDomain = new Models.Domain.Book_Author()
                 {
                     BookId = bookDomain.Id,
@@ -98,6 +101,64 @@ namespace API.Controllers
                 _dbContext.SaveChanges();
             }
             return Ok();
+        }
+        [HttpPut("update-book-by-id/{id:int}")]
+        public IActionResult UpdateBookById(int id, [FromBody] AddBookRequestDTO addBookRequestDTO)
+        {
+            var bookDomain = _dbContext.Books.FirstOrDefault(x => x.Id == id);
+            if (bookDomain != null)
+            {
+                bookDomain.Title = addBookRequestDTO.Title;
+                bookDomain.Description = addBookRequestDTO.Description;
+                bookDomain.IsRead = addBookRequestDTO.IsRead;
+                bookDomain.DateRead = addBookRequestDTO.DateRead;
+                bookDomain.Rate = addBookRequestDTO.Rate;
+                bookDomain.Genre = addBookRequestDTO.Genre;
+                bookDomain.CoverUrl = addBookRequestDTO.CoverUrl;
+                bookDomain.DateAdded = addBookRequestDTO.DateAdded;
+                bookDomain.PublisherID = addBookRequestDTO.PublisherID;
+                _dbContext.SaveChanges();
+            }
+            var existingBookAuthors = _dbContext.Books_Authors.Where(x => x.BookId == id).ToList();
+            if (existingBookAuthors != null && existingBookAuthors.Count > 0)
+            {
+                _dbContext.Books_Authors.RemoveRange(existingBookAuthors);
+                _dbContext.SaveChanges();
+            }
+            foreach (var authorId in addBookRequestDTO.AuthorIds)
+            {
+                var authorDomain = _dbContext.Authors.FirstOrDefault(x => x.Id == authorId);
+                if (authorDomain == null)
+                {
+                    return NotFound();
+                }
+                var bookAuthorDomain = new Models.Domain.Book_Author()
+                {
+                    BookId = bookDomain.Id,
+                    AuthorId = authorDomain.Id
+                };
+                _dbContext.Books_Authors.Add(bookAuthorDomain);
+                _dbContext.SaveChanges();
+            }
+            return Ok(addBookRequestDTO);
+        }
+        [HttpDelete("delete-book-by-id/{id:int}")]
+        public IActionResult DeleteBookById(int id)
+        {
+            var bookDomain = _dbContext.Books.FirstOrDefault(x => x.Id == id);
+            if (bookDomain == null)
+            {
+                return NotFound();
+            }
+            var existingBookAuthors = _dbContext.Books_Authors.Where(x => x.BookId == id).ToList();
+            if (existingBookAuthors != null && existingBookAuthors.Count > 0)
+            {
+                _dbContext.Books_Authors.RemoveRange(existingBookAuthors);
+                _dbContext.SaveChanges();
+            }
+            _dbContext.Books.Remove(bookDomain);
+            _dbContext.SaveChanges();
+            return Ok(bookDomain);
         }
 
     }
