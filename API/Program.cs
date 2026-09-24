@@ -1,8 +1,10 @@
 
 using API.Data;
+using API.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Security.Policy;
+using API.Repositories;
 
 namespace API
 {
@@ -21,8 +23,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-
+            builder.Services.AddScoped<IBookRepository, SQLBookRepository>();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddScoped<IAuthorRepository, SQLAuthorRepository>();
+            builder.Services.AddScoped<IPublisherRepository, SQLPublisherRepository>();
 
 
             var app = builder.Build();
