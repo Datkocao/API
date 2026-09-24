@@ -76,5 +76,25 @@ namespace API.Repositories
             }
             return null;
         }
+        public List<BookWithAuthorAndPublisherDTO> GetAuthorBooks(int authorId)
+        {
+            var authorBooks = _dbContext.Books_Authors
+                .Where(n => n.AuthorId == authorId)
+                .Select(n => new BookWithAuthorAndPublisherDTO()
+                {
+                    Id = n.Book.Id,
+                    Title = n.Book.Title,
+                    Description = n.Book.Description,
+                    IsRead = n.Book.IsRead,
+                    DateRead = n.Book.IsRead ? n.Book.DateRead.Value : null,
+                    Rate = n.Book.IsRead ? n.Book.Rate.Value : null,
+                    Genre = n.Book.Genre,
+                    CoverUrl = n.Book.CoverUrl,
+                    PublisherName = n.Book.Publisher.Name,
+                    AuthorNames = n.Book.Book_Authors.Select(a => a.Author.FullName).ToList()
+                }).ToList();
+
+            return authorBooks;
+        }
     }
 }

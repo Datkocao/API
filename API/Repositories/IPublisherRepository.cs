@@ -11,5 +11,6 @@ namespace API.Repositories
         AddPublisherRequestDTO AddPublisher(AddPublisherRequestDTO addPublisherRequestDTO);
         PublisherNoIdDTO UpdatePublisherById(int id, PublisherNoIdDTO publisherNoIdDTO);
         Publisher? DeletePublisherById(int id);
+        List<BookWithAuthorAndPublisherDTO> GetPublisherBooks(int publisherId);
     }
 }

@@ -52,6 +52,11 @@ namespace API.Controllers
             var publisherDelete = _publisherRepository.DeletePublisherById(id);
             return Ok();
         }
-
+        [HttpGet("{id}/books")]
+        public IActionResult GetBooksByPublisherId(int id)
+        {
+            var publisherWithBooks = _publisherRepository.GetPublisherBooks(id); // Giả định repository của bạn có hàm này
+            return Ok(publisherWithBooks);
+        }
     }
 }

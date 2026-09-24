@@ -10,5 +10,6 @@ namespace API.Repositories
         AddAuthorRequestDTO AddAuthor(AddAuthorRequestDTO addAuthorRequestDTO);
         AuthorNoIdDTO UpdateAuthorById(int id, AuthorNoIdDTO authorNoIdDTO);
         Author? DeleteAuthorById(int id);
+        List<BookWithAuthorAndPublisherDTO> GetAuthorBooks(int authorId);
     }
 }

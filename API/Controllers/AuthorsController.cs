@@ -49,5 +49,25 @@ namespace API.Controllers
             var authorDelete = _authorRepository.DeleteAuthorById(id);
             return Ok();
         }
+        [Route("api/[controller]")]
+        [ApiController]
+        public class AuthorController : ControllerBase
+        {
+            private readonly AppDbContext _dbContext;
+            private readonly IAuthorRepository _authorRepository; // Hoặc IBookRepository tùy cách bạn tổ chức
+
+            public AuthorController(AppDbContext dbContext, IAuthorRepository authorRepository)
+            {
+                _dbContext = dbContext;
+                _authorRepository = authorRepository;
+            }
+
+            [HttpGet("{id}/books")]
+            public IActionResult GetBooksByAuthorId(int id)
+            {
+                var authorWithBooks = _authorRepository.GetAuthorBooks(id); // Giả định repository của bạn có hàm này
+                return Ok(authorWithBooks);
+            }
+        }
     }
 }
