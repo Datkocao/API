@@ -22,6 +22,9 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
+            builder.Services.AddSwaggerGen();
+
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
@@ -34,8 +37,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-            builder.Services.AddSwaggerGen();
-
+            
             app.MapControllers();
 
             app.Run();
