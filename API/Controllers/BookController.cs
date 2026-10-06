@@ -2,6 +2,7 @@
 using API.Models.Domain;
 using API.Models.DTO;
 using API.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -10,6 +11,7 @@ namespace API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class BooksController : ControllerBase
     {
         private readonly AppDbContext _dbContext;
@@ -20,6 +22,7 @@ namespace API.Controllers
             _bookRepository = bookRepository;
         }
         [HttpGet("get-all-books")]
+        [Authorize(Roles = "Read")]
         public IActionResult GetAll([FromQuery] string? filterOn, [FromQuery] string? filterQuery,
  [FromQuery] string? sortBy, [FromQuery] bool isAscending,
  [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
@@ -54,6 +57,7 @@ namespace API.Controllers
             return Ok(updateBook);
         }
         [HttpDelete("delete-book-by-id/{id}")]
+        [Authorize(Roles ="Write")]
         public IActionResult DeleteBookById(int id)
         {
             var deleteBook = _bookRepository.DeleteBookById(id);
