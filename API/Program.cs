@@ -11,11 +11,14 @@ using System.Text;
 using WebAPI_simple.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
+using Serilog;
 
 namespace API
 {
     public class Program
     {
+
+
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +28,10 @@ namespace API
 
             builder.Services.AddDbContext<BookAuthDbContext>(options =>options.UseSqlServer(builder.Configuration.GetConnectionString("BookAuthConnection")));
             // Add services to the container.
+
+            var _logger = new LoggerConfiguration().WriteTo.Console().WriteTo.File("Logs/Book_log.txt", rollingInterval: RollingInterval.Minute).MinimumLevel.Information().CreateLogger();
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(_logger);
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -96,6 +103,8 @@ namespace API
      ClockSkew = TimeSpan.Zero,
      IssuerSigningKey = new SymmetricSecurityKey(
  Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
+
+
  });
 
 

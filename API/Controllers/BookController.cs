@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using System.Text.Json;
+using API.Data;
 using API.Models.Domain;
 using API.Models.DTO;
 using API.Repositories;
@@ -16,10 +17,12 @@ namespace API.Controllers
     {
         private readonly AppDbContext _dbContext;
         private readonly IBookRepository _bookRepository;
-        public BooksController(AppDbContext dbContext, IBookRepository bookRepository)
+        private readonly ILogger<BooksController> _logger;
+        public BooksController(AppDbContext dbContext, IBookRepository bookRepository, ILogger<BooksController> logger)
         {
             _dbContext = dbContext;
             _bookRepository = bookRepository;
+            _logger = logger;
         }
         [HttpGet("get-all-books")]
         [Authorize(Roles = "Read")]
@@ -27,9 +30,17 @@ namespace API.Controllers
  [FromQuery] string? sortBy, [FromQuery] bool isAscending,
  [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
+
+            _logger.LogInformation("GetAll Book Action method was invoked");
+            _logger.LogWarning("This is a warning log");
+            _logger.LogError("This is a error log");
+
             // su dung reposity pattern 
             var allBooks = _bookRepository.GetAllBooks(filterOn, filterQuery, sortBy,
            isAscending, pageNumber, pageSize);
+
+            _logger.LogInformation($"Finished GetAllBook request with data { JsonSerializer.Serialize(allBooks)}");
+
             return Ok(allBooks);
         }
 
